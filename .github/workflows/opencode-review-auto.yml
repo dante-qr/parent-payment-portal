@@ -1,0 +1,77 @@
+name: OpenCode Auto Review
+
+on:
+    pull_request:
+        types: [opened, synchronize, reopened]
+        branches: [develop]
+
+jobs:
+    review:
+        if: ${{ github.actor != 'opencode-agent[bot]' }}
+        runs-on: ubuntu-latest
+        permissions:
+            id-token: write
+            contents: read
+            pull-requests: write
+            issues: read
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Fetch linked issue from PR body
+              id: fetch_issue
+              env:
+                  GH_TOKEN: ${{ github.token }}
+                  REPO: ${{ github.repository }}
+              run: |
+                  cat > /tmp/pr_body.txt << 'HEREDOC_END'
+                  ${{ github.event.pull_request.body }}
+                  HEREDOC_END
+                  ISSUE_NUM=$(grep -oP '#(\d+)' /tmp/pr_body.txt | head -1 | tr -d '#')
+                  rm -f /tmp/pr_body.txt
+                  if [ -n "$ISSUE_NUM" ]; then
+                    BODY=$(gh issue view "$ISSUE_NUM" --repo "$REPO" --json body --jq '.body' || echo "")
+                    echo "issue_number=$ISSUE_NUM" >> "$GITHUB_OUTPUT"
+                    EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64 | tr -dc 'a-zA-Z0-9')
+                    echo "issue_body<<$EOF" >> "$GITHUB_OUTPUT"
+                    echo "$BODY" >> "$GITHUB_OUTPUT"
+                    echo "$EOF" >> "$GITHUB_OUTPUT"
+                    echo "Linked issue #$ISSUE_NUM fetched"
+                  else
+                    echo "No linked issue found in PR body"
+                  fi
+
+            - name: Run OpenCode for Code Review
+              uses: anomalyco/opencode/github@latest
+              env:
+                  OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+                  GITHUB_TOKEN: ${{ github.token }}
+              with:
+                  model: ${{ secrets.OPENCODE_MODEL }}
+                  use_github_token: true
+                  prompt: |
+                      Eres un Ingeniero de Software Senior, actuando como revisor de código experto, y siempre debes responder en español. Tu tarea es revisar los cambios de código (diff del Pull Request) a fondo y proporcionar feedback constructivo.
+
+                      Debes adherirte estrictamente a las siguientes reglas de formato:
+
+                      1. **Comentarios en Línea (Observaciones):** Si encuentras observaciones o sugerencias, colócalas como comentarios **en línea** (inline) en las líneas de código afectadas o en el archivo correspondiente.
+                      2. **Formato de Código Sugerido:** Cuando sugieras una corrección o una alternativa de código, **debes incluirla siempre dentro de un bloque de código Markdown** (ejemplo: ```python...```). No uses código inline.
+                      3. **Revisión Satisfactoria:** Si el Pull Request está en orden, tu **única respuesta** debe ser un mensaje muy corto, directo y positivo. Por ejemplo: "Revisión completada. Todo correcto. Listo para fusionar."
+
+                      Concéntrate en la evaluación de los siguientes aspectos clave:
+
+                      * **Corrección y Lógica:** ¿El código cumple con los requisitos funcionales y maneja salidas esperadas y casos límite (edge cases)?
+                      * **Adhesión a Estándares:** ¿Sigue los estándares de codificación del proyecto, guías de estilo y mejores prácticas para el lenguaje/framework utilizado?
+                      * **Legibilidad y Mantenibilidad:** ¿El código es fácil de leer, entender y mantener? ¿Los comentarios son claros y útiles?
+                      * **Rendimiento y Eficiencia:** ¿Existen posibles cuellos de botella en el rendimiento, oportunidades de optimización o duplicación de código innecesaria?
+                      * **Vulnerabilidades de Seguridad:** ¿Existen preocupaciones de seguridad, como potenciales ataques de inyección o manejo incorrecto de datos?
+                      * **Manejo de Errores y Pruebas:** ¿Se han implementado mecanismos apropiados de manejo de errores y logging? ¿El código está adecuadamente probado?
+
+                      ## Verificación de Issue/Ticket
+                      ${{ steps.fetch_issue.outputs.issue_body && 'Contenido del issue vinculado:' }}
+                      ${{ steps.fetch_issue.outputs.issue_body }}
+                      ${{ steps.fetch_issue.outputs.issue_body && '---' }}
+                      Revisa que los cambios en el diff cumplen con los criterios de aceptación descritos en el issue. Si no hay contenido arriba, realiza la revisión normal sin esta verificación.
