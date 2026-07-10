@@ -11,6 +11,9 @@ const config = defineConfig({
 		__APP_VERSION__: JSON.stringify(pkg.version),
 	},
 	resolve: { tsconfigPaths: true },
+	ssr: {
+		external: ["better-auth"],
+	},
 	plugins: [
 		devtools(),
 		process.env.NODE_ENV === "production" &&
@@ -22,7 +25,9 @@ const config = defineConfig({
 					VENDIS_USER_TOKEN: process.env.VENDIS_USER_TOKEN,
 					NODE_ENV: process.env.NODE_ENV,
 				},
-				rollupConfig: { external: [/^@sentry\//] },
+				rollupConfig: {
+					external: [/^@sentry\//],
+				},
 			}),
 		tailwindcss(),
 		tanstackStart(),
