@@ -1,4 +1,5 @@
 {
+	"extends": "./tsconfig.base.json",
 	"include": [
 		"**/*.ts",
 		"**/*.tsx",
@@ -7,13 +8,12 @@
 		"vite.config.ts"
 	],
 	"compilerOptions": {
-		"target": "ES2022",
 		"jsx": "react-jsx",
-		"module": "ESNext",
-		"lib": ["ES2022", "DOM", "DOM.Iterable"],
+		"lib": ["ESNext", "DOM", "DOM.Iterable"],
 		"types": ["vite/client"],
 		"paths": {
-			"@/*": ["./src/*"]
+			"@/*": ["./src/*"],
+			"@parent-payment-portal/ui/*": ["./packages/ui/src/*"]
 		},
 
 		/* Bundler mode */

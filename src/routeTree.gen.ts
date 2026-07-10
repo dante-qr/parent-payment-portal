@@ -9,38 +9,148 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from "./routes/__root";
+import { Route as AuthDashboardRouteImport } from "./routes/_auth/dashboard";
+import { Route as AuthRouteRouteImport } from "./routes/_auth/route";
+import { Route as ApiAuthSplatRouteImport } from "./routes/api/auth/$";
+import { Route as ApiDebugEnvRouteImport } from "./routes/api/debug-env";
+import { Route as ApiRpcSplatRouteImport } from "./routes/api/rpc/$";
 import { Route as IndexRouteImport } from "./routes/index";
+import { Route as LoginRouteImport } from "./routes/login";
+import { Route as TodosRouteImport } from "./routes/todos";
 
+const TodosRoute = TodosRouteImport.update({
+	id: "/todos",
+	path: "/todos",
+	getParentRoute: () => rootRouteImport,
+} as any);
+const LoginRoute = LoginRouteImport.update({
+	id: "/login",
+	path: "/login",
+	getParentRoute: () => rootRouteImport,
+} as any);
+const AuthRouteRoute = AuthRouteRouteImport.update({
+	id: "/_auth",
+	getParentRoute: () => rootRouteImport,
+} as any);
 const IndexRoute = IndexRouteImport.update({
 	id: "/",
 	path: "/",
 	getParentRoute: () => rootRouteImport,
 } as any);
+const ApiDebugEnvRoute = ApiDebugEnvRouteImport.update({
+	id: "/api/debug-env",
+	path: "/api/debug-env",
+	getParentRoute: () => rootRouteImport,
+} as any);
+const AuthDashboardRoute = AuthDashboardRouteImport.update({
+	id: "/dashboard",
+	path: "/dashboard",
+	getParentRoute: () => AuthRouteRoute,
+} as any);
+const ApiRpcSplatRoute = ApiRpcSplatRouteImport.update({
+	id: "/api/rpc/$",
+	path: "/api/rpc/$",
+	getParentRoute: () => rootRouteImport,
+} as any);
+const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
+	id: "/api/auth/$",
+	path: "/api/auth/$",
+	getParentRoute: () => rootRouteImport,
+} as any);
 
 export interface FileRoutesByFullPath {
 	"/": typeof IndexRoute;
+	"/login": typeof LoginRoute;
+	"/todos": typeof TodosRoute;
+	"/dashboard": typeof AuthDashboardRoute;
+	"/api/debug-env": typeof ApiDebugEnvRoute;
+	"/api/auth/$": typeof ApiAuthSplatRoute;
+	"/api/rpc/$": typeof ApiRpcSplatRoute;
 }
 export interface FileRoutesByTo {
 	"/": typeof IndexRoute;
+	"/login": typeof LoginRoute;
+	"/todos": typeof TodosRoute;
+	"/dashboard": typeof AuthDashboardRoute;
+	"/api/debug-env": typeof ApiDebugEnvRoute;
+	"/api/auth/$": typeof ApiAuthSplatRoute;
+	"/api/rpc/$": typeof ApiRpcSplatRoute;
 }
 export interface FileRoutesById {
 	__root__: typeof rootRouteImport;
 	"/": typeof IndexRoute;
+	"/_auth": typeof AuthRouteRouteWithChildren;
+	"/login": typeof LoginRoute;
+	"/todos": typeof TodosRoute;
+	"/_auth/dashboard": typeof AuthDashboardRoute;
+	"/api/debug-env": typeof ApiDebugEnvRoute;
+	"/api/auth/$": typeof ApiAuthSplatRoute;
+	"/api/rpc/$": typeof ApiRpcSplatRoute;
 }
 export interface FileRouteTypes {
 	fileRoutesByFullPath: FileRoutesByFullPath;
-	fullPaths: "/";
+	fullPaths:
+		| "/"
+		| "/login"
+		| "/todos"
+		| "/dashboard"
+		| "/api/debug-env"
+		| "/api/auth/$"
+		| "/api/rpc/$";
 	fileRoutesByTo: FileRoutesByTo;
-	to: "/";
-	id: "__root__" | "/";
+	to:
+		| "/"
+		| "/login"
+		| "/todos"
+		| "/dashboard"
+		| "/api/debug-env"
+		| "/api/auth/$"
+		| "/api/rpc/$";
+	id:
+		| "__root__"
+		| "/"
+		| "/_auth"
+		| "/login"
+		| "/todos"
+		| "/_auth/dashboard"
+		| "/api/debug-env"
+		| "/api/auth/$"
+		| "/api/rpc/$";
 	fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
 	IndexRoute: typeof IndexRoute;
+	AuthRouteRoute: typeof AuthRouteRouteWithChildren;
+	LoginRoute: typeof LoginRoute;
+	TodosRoute: typeof TodosRoute;
+	ApiDebugEnvRoute: typeof ApiDebugEnvRoute;
+	ApiAuthSplatRoute: typeof ApiAuthSplatRoute;
+	ApiRpcSplatRoute: typeof ApiRpcSplatRoute;
 }
 
 declare module "@tanstack/react-router" {
 	interface FileRoutesByPath {
+		"/todos": {
+			id: "/todos";
+			path: "/todos";
+			fullPath: "/todos";
+			preLoaderRoute: typeof TodosRouteImport;
+			parentRoute: typeof rootRouteImport;
+		};
+		"/login": {
+			id: "/login";
+			path: "/login";
+			fullPath: "/login";
+			preLoaderRoute: typeof LoginRouteImport;
+			parentRoute: typeof rootRouteImport;
+		};
+		"/_auth": {
+			id: "/_auth";
+			path: "";
+			fullPath: "/";
+			preLoaderRoute: typeof AuthRouteRouteImport;
+			parentRoute: typeof rootRouteImport;
+		};
 		"/": {
 			id: "/";
 			path: "/";
@@ -48,11 +158,57 @@ declare module "@tanstack/react-router" {
 			preLoaderRoute: typeof IndexRouteImport;
 			parentRoute: typeof rootRouteImport;
 		};
+		"/api/debug-env": {
+			id: "/api/debug-env";
+			path: "/api/debug-env";
+			fullPath: "/api/debug-env";
+			preLoaderRoute: typeof ApiDebugEnvRouteImport;
+			parentRoute: typeof rootRouteImport;
+		};
+		"/_auth/dashboard": {
+			id: "/_auth/dashboard";
+			path: "/dashboard";
+			fullPath: "/dashboard";
+			preLoaderRoute: typeof AuthDashboardRouteImport;
+			parentRoute: typeof AuthRouteRoute;
+		};
+		"/api/rpc/$": {
+			id: "/api/rpc/$";
+			path: "/api/rpc/$";
+			fullPath: "/api/rpc/$";
+			preLoaderRoute: typeof ApiRpcSplatRouteImport;
+			parentRoute: typeof rootRouteImport;
+		};
+		"/api/auth/$": {
+			id: "/api/auth/$";
+			path: "/api/auth/$";
+			fullPath: "/api/auth/$";
+			preLoaderRoute: typeof ApiAuthSplatRouteImport;
+			parentRoute: typeof rootRouteImport;
+		};
 	}
 }
 
+interface AuthRouteRouteChildren {
+	AuthDashboardRoute: typeof AuthDashboardRoute;
+}
+
+const AuthRouteRouteChildren: AuthRouteRouteChildren = {
+	AuthDashboardRoute: AuthDashboardRoute,
+};
+
+const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
+	AuthRouteRouteChildren,
+);
+
 const rootRouteChildren: RootRouteChildren = {
 	IndexRoute: IndexRoute,
+	AuthRouteRoute: AuthRouteRouteWithChildren,
+	LoginRoute: LoginRoute,
+	TodosRoute: TodosRoute,
+	ApiDebugEnvRoute: ApiDebugEnvRoute,
+	ApiAuthSplatRoute: ApiAuthSplatRoute,
+	ApiRpcSplatRoute: ApiRpcSplatRoute,
 };
 export const routeTree = rootRouteImport
 	._addFileChildren(rootRouteChildren)
