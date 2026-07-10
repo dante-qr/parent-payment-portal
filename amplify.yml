@@ -3,9 +3,11 @@ frontend:
   phases:
     preBuild:
       commands:
-        - echo "VENDIS_API_URL=$VENDIS_API_URL" >> .env
-        - echo "VENDIS_API_KEY=$VENDIS_API_KEY" >> .env
-        - echo "VENDIS_USER_TOKEN=$VENDIS_USER_TOKEN" >> .env
+        - echo "DATABASE_URL=$DATABASE_URL" >> .env
+        - echo "BETTER_AUTH_SECRET=$BETTER_AUTH_SECRET" >> .env
+        - echo "BETTER_AUTH_URL=$BETTER_AUTH_URL" >> .env
+        - echo "CORS_ORIGIN=$CORS_ORIGIN" >> .env
+        - echo "SKIP_ENV_VALIDATION=$SKIP_ENV_VALIDATION" >> .env
 
         - echo "NODE_ENV=$NODE_ENV" >> .env
 
@@ -22,7 +24,3 @@ frontend:
     baseDirectory: .amplify-hosting
     files:
       - "**/*"
-  cache:
-    paths:
-      - node_modules/**/*
-      - ~/.bun/**/*

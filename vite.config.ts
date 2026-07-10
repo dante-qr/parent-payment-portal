@@ -20,9 +20,11 @@ const config = defineConfig({
 			nitro({
 				preset: "aws-amplify",
 				runtimeConfig: {
-					VENDIS_API_URL: process.env.VENDIS_API_URL,
-					VENDIS_API_KEY: process.env.VENDIS_API_KEY,
-					VENDIS_USER_TOKEN: process.env.VENDIS_USER_TOKEN,
+					DATABASE_URL: process.env.DATABASE_URL,
+					BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
+					BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
+					CORS_ORIGIN: process.env.CORS_ORIGIN,
+					SKIP_ENV_VALIDATION: process.env.SKIP_ENV_VALIDATION,
 					NODE_ENV: process.env.NODE_ENV,
 				},
 				rollupConfig: {
